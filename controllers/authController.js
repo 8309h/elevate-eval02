@@ -1,0 +1,52 @@
+const User = require("../models/User");
+exports.register = async (req, res) => {
+      const { username, email, password } = req.body;
+      const userExists = await User.findOne({ email });
+      if (userExists) {
+            res.status(200).json({
+                  status: true,
+                  message: "Email already exist"
+            })
+      }
+
+      const salt = await bcrypt.genSalt(10);
+
+      const hashedPassword = bcrypt.hash(password, salt);
+
+      const user = await User.create({
+            username,
+            email,
+            password: hashedPassword
+      })
+
+      res.status(201).json({ sucess: true, message: "User Created " });
+
+
+}
+
+exports.login = async (req, res) => {
+      const { email, password } = req.body;
+
+      const user = await User.findOne({email});
+
+      if(!user)
+            return res.status(401).json({status:true,
+      message : "Invalid Credentials"});
+
+      const isMatch  =  await bcrypt.compare(password,user.password);
+
+     if(!isMatch) {
+      return res.json(401).json({message: "Invalid Credentials"});
+     }
+
+      const token = JWT.sign(
+            user.id,
+            process.env.JWT_SECRET,
+            {expire : "7d"}
+      )
+
+      res.status(200).json({
+            sucess : true,
+            message : "Login Succesful"
+      })
+}
