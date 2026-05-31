@@ -7,7 +7,7 @@ exports.createPost = async(req,res) =>
                   author : req.user._id
             });
 
-            res.status(201).josn({
+            res.status(201).json({
                   success : true,
                   post : post
             })
