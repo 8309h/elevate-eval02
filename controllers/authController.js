@@ -1,13 +1,9 @@
 const User = require("../models/User");
+const bcrypt =  require("bcrypt");
+const jwt = require("jsonwebtoken");
 exports.register = async (req, res) => {
       const { username, email, password } = req.body;
-      const userExists = await User.findOne({ email });
-      if (userExists) {
-            res.status(200).json({
-                  status: true,
-                  message: "Email already exist"
-            })
-      }
+     
 
       const salt = await bcrypt.genSalt(10);
 
