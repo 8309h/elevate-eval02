@@ -7,7 +7,7 @@ exports.register = async (req, res) => {
 
       const salt = await bcrypt.genSalt(10);
 
-      const hashedPassword = bcrypt.hash(password, salt);
+      const hashedPassword = await bcrypt.hash(password, salt);
 
       const user = await User.create({
             username,
@@ -35,14 +35,10 @@ exports.login = async (req, res) => {
       return res.json(401).json({message: "Invalid Credentials"});
      }
 
-      const token = JWT.sign(
-            user.id,
-            process.env.JWT_SECRET,
-            {expire : "7d"}
-      )
-
+      const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
       res.status(200).json({
             sucess : true,
-            message : "Login Succesful"
+            message : "Login Succesful",
+            token : token
       })
 }
